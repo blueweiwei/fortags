@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/vue.min.js"></script>
+    <script src="js/antd.min.js"></script>
+    <link href="css/antd.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/axios.min.js"></script>
+    <script src="js/config.js"></script>
+
+</head>
+<style>
+</style>
+<body>
+    <div id="app">
+        <template>
+            <a-layout id="components-layout-demo-fixed-sider">
+              <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
+                <div class="logo" ></div>
+                <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
+                  <a-menu-item key="1">
+                    <a-icon type="user" ></a-icon>
+                    <span class="nav-text">nav 1</span>
+                  </a-menu-item>
+                  <!-- <a-menu-item key="2">
+                    <a-icon type="video-camera" ></a-icon>
+                    <span class="nav-text">nav 2</span>
+                  </a-menu-item>
+                  <a-menu-item key="3">
+                    <a-icon type="upload" ></a-icon>
+                    <span class="nav-text">nav 3</span>
+                  </a-menu-item> -->
+                  
+                </a-menu>
+              </a-layout-sider>
+              <a-layout :style="{ marginLeft: '200px' }">
+                <a-layout-header :style="{ background: '#fff', padding: 0 }" ></a-layout-header>
+                <a-layout-content style="border-radius: 5px;" :style="{ padding: '10px',margin: '24px 16px 0', background: '#fff', overflow: 'initial' }">
+                   <div class="content-all">
+                      <div class="header">
+                        <div style="height: 50px;">
+                          <a-button style="float: right;margin:20px ;" @click="addDrawer"> <a-icon type="plus" ></a-icon> 新标签 </a-button>
+                        </div>
+                        <a-input-search
+                          placeholder="input search text"
+                          enter-button="Search"
+                          size="large"
+                          maxLength="100"
+                          @search=""
+                          style="max-width: 400px;"
+                        ></a-input-search>
+                        
+                      </div>
+                    <template>
+                      <div class="list">
+                      <a-table :default-current="2" :columns="columns" :data-source="formdata" :scroll="{ x: 400 }" 
+                      :pagination="{
+                        current: tableConfig.pageNum,
+                        defaultPageSize: 5,
+                        onChange: (pageNumber) => tableConfig.pageNum = pageNumber,
+                      }"
+                      >
+                        <a slot="action" slot-scope="row, record, index" href="javascript:;">
+                          <a-button  @click="visible = true,edit(index)" type="primary" size="small" style="margin-right: 5px" >修改</a-button>
+                          <a-button type="error" size="small" @click="remove(index)">删除</a-button>
+                        </a>
+                      </a-table>
+                      </div>
+                    </template>
+                   </div>
+                </a-layout-content>
+                <a-layout-footer :style="{ textAlign: 'center' }">
+                  Ant Design ©2021 Created by Ant UED
+                </a-layout-footer>
+              </a-layout>
+            </a-layout>
+          </template>
+          <template>
+            <div>
+              <a-drawer
+                title="修改站点信息"
+                :width="360"
+                :visible="visible"
+                :body-style="{ paddingBottom: '80px' }"
+                @close="onClose"
+              >
+              
+              <a-row :gutter="16">
+                <a-col :span="24">
+                  <a-form-item label="网站标题">
+                    <a-input
+                      v-decorator="[
+                        'title',
+                        {
+                          rules: [{ required: true, message: '请输入网站标题' }],
+                        },
+                      ]"
+                      placeholder="请输入网站标题"
+                      v-model="ed.title"
+                    />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="24">
+                  <a-form-item label="站点详述">
+                    <a-input
+                      v-decorator="[
+                        'desc',
+                        {
+                          rules: [{ required: true, message: '请输入站点详述' }],
+                        },
+                      ]"
+                      placeholder="请输入站点详述"
+                      v-model="ed.desc"
+                    />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="24">
+                  <a-form-item label="站点URL">
+                    <a-input
+                      v-decorator="[
+                        'url',
+                        {
+                          rules: [{ required: true, message: '请输入站点URL' }],
+                        },
+                      ]"
+                      placeholder="请输入站点URL"
+                      v-model="ed.url"
+                    />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="24">
+                  <a-form-item label="站点小图标">
+                    <a-input
+                      v-decorator="[
+                        'url',
+                        {
+                          rules: [{ required: true, message: '请输入站点图标URL' }],
+                        },
+                      ]"
+                      placeholder="请输入站点图标URL"
+                      v-model="ed.img"
+                    />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+
+
+                <div
+                  :style="{
+                    position: 'absolute',
+                    right: 0,
+                    bottom: 0,
+                    width: '100%',
+                    borderTop: '1px solid #e9e9e9',
+                    padding: '10px 16px',
+                    background: '#fff',
+                    textAlign: 'right',
+                    zIndex: 1,
+                  }"
+                >
+                  <a-button :style="{ marginRight: '8px' }" @click="onClose">
+                    取消
+                  </a-button>
+                  <a-button type="primary" @click="subEdit(ed.objectId),onClose()">
+                    更新
+                  </a-button>
+                </div>
+              </a-drawer>
+            </div>
+          </template>
+          <template>
+            <div>
+              <a-drawer
+                title="添加新网站"
+                :width="360"
+                :visible="addSite"
+                :body-style="{ paddingBottom: '80px' }"
+                @close="onClose"
+              >
+
+              <a-row :gutter="16">
+                <a-col :span="24">
+                  <a-form-item label="网站标题">
+                    <a-input
+                      v-decorator="[
+                        'title',
+                        {
+                          rules: [{ required: true, message: '请输入网站标题' }],
+                        },
+                      ]"
+                      placeholder="请输入网站标题"
+                      v-model="dr.title"
+                    />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="24">
+                  <a-form-item label="站点详述">
+                    <a-input
+                      v-decorator="[
+                        'desc',
+                        {
+                          rules: [{ required: true, message: '请输入站点详述' }],
+                        },
+                      ]"
+                      placeholder="请输入站点详述"
+                      v-model="dr.desc"
+                    />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="24">
+                  <a-form-item label="站点URL">
+                    <a-input
+                      v-decorator="[
+                        'url',
+                        {
+                          rules: [{ required: true, message: '请输入站点URL' }],
+                        },
+                      ]"
+                      placeholder="请输入站点URL"
+                      v-model="dr.url"
+                    />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="24">
+                  <a-form-item label="站点小图标--头像">
+                    <a-input
+                      v-decorator="[
+                        'url',
+                        {
+                          rules: [{ required: true, message: '请输入站点图标URL' }],
+                        },
+                      ]"
+                      placeholder="请输入站点图标URL"
+                      v-model="dr.img"
+                    />
+                  </a-form-item>
+                </a-col>
+              </a-row>
+
+                <div
+                  :style="{
+                    position: 'absolute',
+                    right: 0,
+                    bottom: 0,
+                    width: '100%',
+                    borderTop: '1px solid #e9e9e9',
+                    padding: '10px 16px',
+                    background: '#fff',
+                    textAlign: 'right',
+                    zIndex: 1,
+                  }"
+                >
+                  <a-button :style="{ marginRight: '8px' }" @click="onClose">
+                   取消
+                  </a-button>
+                  <a-button type="primary" @click="addData(),onClose()">
+                    提交
+                  </a-button>
+                </div>
+              </a-drawer>
+            </div>
+          </template>
+    </div>
+    <script type="application/javascript">
+    new Vue({
+        el: '#app',
+        data: { 
+          columns : [
+            { title: '网站标题', width: 100, dataIndex: 'title', key: 'title', fixed: 'left' },
+            { title: '站点详述', width: 200,dataIndex: 'desc', key: 'desc' },
+            { title: '站点小图标', width: 100,dataIndex: 'img', key: 'img' },
+            { title: '站点URL', dataIndex: 'url', key: 'url' },
+            {
+              title: '编辑',
+              key: 'operation',
+              fixed: 'right',
+              width: 140,
+              scopedSlots: { customRender: 'action' },
+            },
+          ],
+          datas : [
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '2',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '3',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '4',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },{
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+            {
+              title: '1',
+              desc: 'John Brown',
+              url: 'New York Park',
+            },
+          ],
+          dr:{
+            title:"",
+            desc:"",
+            url:"",
+            img:""
+          },
+          ed:{
+            title:"",
+            desc:"",
+            url:"",
+            img:"",
+            objectId:""
+          },
+          tableConfig:{
+            pageNum: 1
+          },
+            message: 'Hello Vue.js',
+            // form: this.$form.createForm(this),
+            visible: false,
+            addSite: false,
+            formdata:[],
+        },
+        created(){
+          this.getData();
+        },
+        methods:{
+
+
+          // 抽屉函数
+          addData(){
+            axios({
+              method:'post',
+              url:serverURL,
+              headers:headers,
+              data:{
+                title:this.dr.title,
+                desc:this.dr.desc,
+                url:this.dr.url,
+                img:this.dr.img
+              }
+            }).then(res =>{
+                console.log(res);
+                this.getData();
+            })
+            this.$message.info("submit addSite message!");
+          },
+
+          // 列表编辑删除数据
+          edit(index){
+            this.moveToDr(index);
+            this.$message.success("第"+this.tableConfig.pageNum+"页的第"+index+"个");
+          },
+          remove(index){
+            this.delData(index),
+            this.formdata.splice(index+(this.tableConfig.pageNum-1)*5,1),
+            this.$message.info(index+(this.tableConfig.pageNum-1)*5);
+          },
+
+          // 列表数据传入到抽屉
+          moveToDr(index){
+            this.ed =this.formdata[index+(this.tableConfig.pageNum-1)*5]
+          },
+          //列表数据删除
+          delData(index){
+            axios({
+              method:'delete',
+              url: serverURL+'/'+this.formdata[index].objectId,
+              headers:headers,
+            }).then(res =>{
+                console.log(res);
+            });
+          },
+          // 清除添加站点的内容
+          delDrCon(){
+            this.dr=[]
+          },
+          delEdCon(){
+            this.ed=[]
+          },
+          //提交更新站点的请求
+          subEdit(index){
+            url=serverURL+'/'+index,
+            console.log(url);
+            axios({
+              method:'put',
+              url:url,
+              headers:headers,
+              data:{
+                title:this.ed.title,
+                desc:this.ed.desc,
+                url:this.ed.url,
+                img:this.ed.img
+              }
+            }).then(res =>{
+                console.log(res);
+            })
+            this.$message.info("submit editSite message!")
+          },
+
+          // 抽屉展示/收起
+          addDrawer(){
+            this.addSite = true;
+          },
+          showDrawer() {
+            this.visible = true;
+          },
+          onClose() {
+            this.visible = false;
+            this.addSite = false;
+          },
+
+          //加载数据库数据
+          getData(){
+            this.formdata=[],
+            axios({
+              method:'get',
+              url: serverURL+'?order=-createdAt',
+              headers:headers
+            }).then(res =>{
+              for( var i=0;i<res.data.results.length;i++){
+                this.formdata.push(res.data.results[i])
+              }
+              console.log(this.formdata);
+              
+          // console.log(serverURL+this.formdata[0].objectId)
+            });
+          },
+        }
+    });
+    </script>
+    </body>
+    </html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/vue.min.js"></script>
+    <script src="js/antd.min.js"></script>
+    <link href="css/antd.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="css/main.css">
+    <script src="js/axios.min.js"></script>
+    <script src="js/config.js"></script>
+</head>
+<style>
+</style>
+<body>
+    <div id="app">
+        <template>
+            <a-layout id="components-layout-demo-fixed-sider">
+              <a-layout-sider :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }">
+                <div class="logo" ></div>
+                <a-menu theme="dark" mode="inline" :default-selected-keys="['1']">
+                  <a-menu-item key="1">
+                    <a-icon type="user" ></a-icon>
+                    <span class="nav-text">nav 1</span>
+                  </a-menu-item>
+                  <!-- <a-menu-item key="2">
+                    <a-icon type="video-camera" ></a-icon>
+                    <span class="nav-text">nav 2</span>
+                  </a-menu-item>
+                  <a-menu-item key="3">
+                    <a-icon type="upload" ></a-icon>
+                    <span class="nav-text">nav 3</span>
+                  </a-menu-item> -->
+                  
+                </a-menu>
+              </a-layout-sider>
+              <a-layout :style="{ marginLeft: '200px' }">
+                <a-layout-header :style="{ background: '#fff', padding: 0 }" ></a-layout-header>
+                <a-layout-content style="border-radius: 5px;" :style="{ padding: '10px',margin: '24px 16px 0', background: '#fff', overflow: 'initial' }">
+                   <div class="content-all">
+                    <template v-for="item in fordata" >
+                        <a-card-grid style="width:210px;margin: 10px;border-radius: 5px;background-color: #dcdee2;">
+                            <!-- {{item}} -->
+                            <a :href="item.url" target="_blank">
+                                <div class="con">
+                                    <div class="left">
+                                        <img :src='item.img'  alt="">
+                                    </div>
+                                    <div class="right">
+                                        <div class="title">
+                                            <font>{{item.title}}</font>
+                                        </div>
+                                        <div class="desc">
+                                            <font>{{item.desc}}</font>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            </a-card-grid>
+                      </template>
+                   </div>
+                </a-layout-content>
+                <a-layout-footer :style="{ textAlign: 'center' }">
+                  Ant Design ©2021 Created by Ant UED
+                </a-layout-footer>
+              </a-layout>
+            </a-layout>
+          </template>
+    </div>
+    <script type="application/javascript">
+    new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello Vue.js',
+            items: [
+                {
+                url:'http://www.705705.xyz/',
+                img: 'https://s1.ax1x.com/2020/11/10/BLHRXt.jpg',
+                title: '皮卡丘',
+                desc: '怕卡秋网站，一个宠物向经理'}
+            ],
+            fordata:[],
+        },
+        created(){
+          this.getData()
+        },
+        methods:{
+          getData(){
+            axios({
+              method:'get',
+              url: serverURL,
+              headers:headers
+            }).then(res =>{
+              for( var i=0;i<res.data.results.length;i++){
+                this.fordata.push(res.data.results[i])
+              }
+              console.log(this.fordata);
+            });
+          },
+        }
+    });
+    </script>
+    </body>
+    </html>

@@ -1,0 +1,75 @@
+*{
+    padding: 0;
+    margin: 0;
+    font-family: "微软雅黑","黑体","宋体"; 
+  }
+  a{
+    text-decoration: none;
+    color: black;
+  }
+  a:hover{
+    text-decoration: none;
+    color: black;
+  }
+  ul,ol{
+    list-style: none;
+  }
+  img{
+    border: none;
+  }
+  input textarea{
+    outline: none;
+  }
+  
+#components-layout-demo-fixed-sider .logo {
+    height: 32px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 16px;
+  }
+.ant-menu-inline>.ant-menu-item, .ant-menu-inline>.ant-menu-submenu>.ant-menu-submenu-title, .ant-menu-vertical-left>.ant-menu-item, .ant-menu-vertical-left>.ant-menu-submenu>.ant-menu-submenu-title, .ant-menu-vertical-right>.ant-menu-item, .ant-menu-vertical-right>.ant-menu-submenu>.ant-menu-submenu-title, .ant-menu-vertical>.ant-menu-item, .ant-menu-vertical>.ant-menu-submenu>.ant-menu-submenu-title{
+    height: 50px;
+}
+.content-all{
+    min-height: 400px;
+}
+.con{
+    display: flex;
+}
+.left img{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+.right{
+    width: 100px;
+    height: 70px;
+    background-color: rgba(201, 201, 201, 0);
+}
+.right .title{
+    height: 30px;
+    text-align: center;
+}
+.right .title font{
+
+}
+.right .desc{
+    border-top:rgb(0, 0, 0) 1px dotted;
+    margin: 0 5px;
+}
+.right .desc font{
+    font-size: xx-small;
+}
+.header{
+    height: 150px;
+    text-align: center;
+}
+.header .a-input-search{
+    width: 100px;
+    top: 300px;
+}
+.list {
+    /* max-width: 800px; */
+    text-align: center;
+}
+.list .a-table{
+}
